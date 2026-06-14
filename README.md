@@ -58,3 +58,21 @@ hybrid boot record is preserved.
 scripts/fix-iso-kernel.sh Zenith.OS-1.0-GPT.iso Zenith.OS-1.0-GPT-fixed.iso
 scripts/fix-iso-kernel.sh Zenith.OS-1.0-MBR.iso Zenith.OS-1.0-MBR-fixed.iso
 ```
+
+## Adding the GNOME desktop
+
+The stock 1.0 root filesystem has no desktop environment installed, so even a
+boot-fixed ISO lands on a text console. `scripts/add-desktop.sh` installs a
+GNOME desktop (GDM3 with casper live autologin) and the Brave browser into the
+squashfs root, regenerates the live initrd, and rebuilds the ISO (boot record
+preserved). It supersedes `fix-iso-kernel.sh` (it also applies the boot fix).
+
+```bash
+# deps: xorriso squashfs-tools isolinux syslinux-common cpio curl
+scripts/add-desktop.sh Zenith.OS-1.0-GPT.iso Zenith.OS-1.0-GPT-desktop.iso
+scripts/add-desktop.sh Zenith.OS-1.0-MBR.iso Zenith.OS-1.0-MBR-desktop.iso
+```
+
+Custom Zenith branding (wallpapers, themes, taskbar) is not yet in this repo, so
+the result is a stock GNOME desktop. The crypto miner mentioned in the feature
+list is intentionally not bundled.
