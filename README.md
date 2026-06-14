@@ -35,3 +35,26 @@ Installation & Deployment
 Live ISO: Bootable live environment for testing and installation
 USB Creation: Compatible with dd, Rufus, Etcher, and other USB creation tools
 Virtualization: Tested and compatible with QEMU and other virtualization platforms
+
+## Repairing live ISOs that kernel-panic on boot
+
+The 1.0 release ISOs booted with `boot=casper` but shipped a plain local-boot
+initrd that did not contain the casper live-boot scripts. The kernel is present
+(`/casper/vmlinuz`), but boot panics early:
+
+```
+/init: .: can't open '/scripts/casper': No such file or directory
+Kernel panic - not syncing: Attempted to kill init!
+```
+
+`scripts/fix-iso-kernel.sh` repairs an affected ISO in place by installing the
+`casper` package into the squashfs root, regenerating a proper live initrd,
+fixing the BIOS `isolinux.cfg` (it was missing the `initrd=` line) plus shipping
+the required `ldlinux.c32`, and adding a matching `md5sum.txt`. The original
+hybrid boot record is preserved.
+
+```bash
+# deps: xorriso squashfs-tools isolinux syslinux-common cpio
+scripts/fix-iso-kernel.sh Zenith.OS-1.0-GPT.iso Zenith.OS-1.0-GPT-fixed.iso
+scripts/fix-iso-kernel.sh Zenith.OS-1.0-MBR.iso Zenith.OS-1.0-MBR-fixed.iso
+```
